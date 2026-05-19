@@ -261,19 +261,22 @@ export default function Availability() {
             });
             const data = await res.json();
             if (res.ok) {
+                // Keep only available slots as requested
+                const availableOnly = data.filter(slot => slot.available);
+
                 // Apply client-side override filters
                 const dayOfWeek = new Date(dateVal).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
                 const matchedOverride = overrides.find(o => o.date === dateVal);
                 const scheduleRule = weeklySchedule[dayOfWeek];
 
-                let filtered = data;
+                let filtered = availableOnly;
 
                 if (matchedOverride) {
                     if (matchedOverride.unavailable) {
                         filtered = [];
                     } else {
-                        filtered = data.filter(slot => {
-                            const [h, m] = slot.start_time.split(':').map(Number);
+                        filtered = availableOnly.filter(slot => {
+                            const [h, m] = slot.time.split(':').map(Number);
                             const slotMinutes = h * 60 + m;
                             const [sh, sm] = matchedOverride.start.split(':').map(Number);
                             const [eh, em] = matchedOverride.end.split(':').map(Number);
@@ -283,8 +286,8 @@ export default function Availability() {
                 } else if (scheduleRule && !scheduleRule.active) {
                     filtered = [];
                 } else if (scheduleRule) {
-                    filtered = data.filter(slot => {
-                        const [h, m] = slot.start_time.split(':').map(Number);
+                    filtered = availableOnly.filter(slot => {
+                        const [h, m] = slot.time.split(':').map(Number);
                         const slotMinutes = h * 60 + m;
                         return scheduleRule.intervals.some(interval => {
                             const [sh, sm] = interval.start.split(':').map(Number);
@@ -472,7 +475,7 @@ export default function Availability() {
                                                         AI Pick
                                                     </span>
                                                 )}
-                                                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>{slot.start_time || slot.user_time}</div>
+                                                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>{slot.time ? slot.time.substring(0, 5) : ''}</div>
                                                 <div style={{ fontSize: '0.6rem', color: slot.is_recommended ? 'var(--accent-blue)' : 'var(--text-secondary)', marginTop: '2px' }}>
                                                     {slot.recommendation_reason || 'Open Slot'}
                                                 </div>
