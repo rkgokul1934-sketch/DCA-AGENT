@@ -46,6 +46,16 @@ export default function Availability() {
         teams: false
     });
 
+    // Ad-hoc booking states
+    const [bookingSlot, setBookingSlot] = useState(null);
+    const [bookingForm, setBookingForm] = useState({
+        name: '',
+        email: '',
+        company_name: '',
+        meeting_title: ''
+    });
+    const [bookingSubmitting, setBookingSubmitting] = useState(false);
+
     // Load initial state from backend (with localStorage fallbacks)
     useEffect(() => {
         const loadSettings = async () => {
@@ -320,6 +330,54 @@ export default function Availability() {
         }
     };
 
+    const handleSlotClick = (slot) => {
+        setBookingSlot(slot);
+        setBookingForm({
+            name: '',
+            email: '',
+            company_name: '',
+            meeting_title: `Meeting with Agent (${selectedDate} at ${slot.time ? slot.time.substring(0, 5) : ''})`
+        });
+    };
+
+    const handleAdhocBookingSubmit = async (e) => {
+        e.preventDefault();
+        setBookingSubmitting(true);
+        try {
+            const token = localStorage.getItem('dca_token');
+            const res = await fetch('/api/v1/legacy-bookings/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({
+                    name: bookingForm.name,
+                    email: bookingForm.email,
+                    company_name: bookingForm.company_name,
+                    meeting_title: bookingForm.meeting_title,
+                    booking_date: selectedDate,
+                    booking_time: bookingSlot.time,
+                    timezone: 'Asia/Kolkata'
+                })
+            });
+
+            if (res.ok) {
+                showToast(`Successfully booked appointment for ${bookingForm.name}!`);
+                setBookingSlot(null);
+                await fetchSlots(selectedDate);
+            } else {
+                const errData = await res.json();
+                showToast(errData.detail || 'Failed to book slot. Please try again.');
+            }
+        } catch (err) {
+            console.error("Error booking adhoc appointment:", err);
+            showToast('Network error booking appointment.');
+        } finally {
+            setBookingSubmitting(false);
+        }
+    };
+
     const handleAddOverride = () => {
         if (!newOverrideDate) return;
         const newObj = {
@@ -449,14 +507,18 @@ export default function Availability() {
                                         {slots.map((slot, index) => (
                                             <div 
                                                 key={index}
+                                                onClick={() => handleSlotClick(slot)}
                                                 style={{
                                                     background: slot.is_recommended ? 'rgba(79, 70, 229, 0.04)' : '#f8fafc',
                                                     border: `1px solid ${slot.is_recommended ? 'var(--accent-blue)' : 'var(--glass-border)'}`,
                                                     borderRadius: '14px',
                                                     padding: '1rem 0.8rem',
                                                     textAlign: 'center',
-                                                    position: 'relative'
+                                                    position: 'relative',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s'
                                                 }}
+                                                className="upcoming-meeting-item"
                                             >
                                                 {slot.is_recommended && (
                                                     <span style={{ 
@@ -980,6 +1042,130 @@ export default function Availability() {
                             </button>
                         </div>
 
+                    </div>
+                </div>
+            )}
+
+            {/* Ad-hoc Booking Modal */}
+            {bookingSlot && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(15, 23, 42, 0.4)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 2000
+                }}>
+                    <div style={{
+                        background: '#ffffff',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: '24px',
+                        width: '90%',
+                        maxWidth: '460px',
+                        padding: '2rem',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1.5rem',
+                        position: 'relative'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Book Available Slot</h3>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                                    {selectedDate} at {bookingSlot.time ? bookingSlot.time.substring(0, 5) : ''}
+                                </p>
+                            </div>
+                            <button 
+                                onClick={() => setBookingSlot(null)}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                                <i data-lucide="x" style={{ width: '20px', height: '20px', color: 'var(--text-secondary)' }}></i>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleAdhocBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <label style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Invitee Name</label>
+                                <input 
+                                    type="text"
+                                    required
+                                    placeholder="Enter full name"
+                                    value={bookingForm.name}
+                                    onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
+                                    style={{ background: '#f8fafc', border: '1px solid var(--glass-border)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', outline: 'none', color: 'var(--text-primary)' }}
+                                />
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <label style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Invitee Email</label>
+                                <input 
+                                    type="email"
+                                    required
+                                    placeholder="Enter email address"
+                                    value={bookingForm.email}
+                                    onChange={(e) => setBookingForm({ ...bookingForm, email: e.target.value })}
+                                    style={{ background: '#f8fafc', border: '1px solid var(--glass-border)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', outline: 'none', color: 'var(--text-primary)' }}
+                                />
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <label style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Company Name</label>
+                                <input 
+                                    type="text"
+                                    required
+                                    placeholder="Enter company name"
+                                    value={bookingForm.company_name}
+                                    onChange={(e) => setBookingForm({ ...bookingForm, company_name: e.target.value })}
+                                    style={{ background: '#f8fafc', border: '1px solid var(--glass-border)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', outline: 'none', color: 'var(--text-primary)' }}
+                                />
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <label style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Meeting Title</label>
+                                <input 
+                                    type="text"
+                                    required
+                                    value={bookingForm.meeting_title}
+                                    onChange={(e) => setBookingForm({ ...bookingForm, meeting_title: e.target.value })}
+                                    style={{ background: '#f8fafc', border: '1px solid var(--glass-border)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', outline: 'none', color: 'var(--text-primary)' }}
+                                />
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '12px', marginTop: '0.5rem' }}>
+                                <button 
+                                    type="button"
+                                    onClick={() => setBookingSlot(null)}
+                                    style={{ flex: 1, background: '#f1f5f9', border: 'none', color: 'var(--text-secondary)', padding: '12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    disabled={bookingSubmitting}
+                                    style={{
+                                        flex: 1,
+                                        background: 'linear-gradient(135deg, var(--accent-blue), #818cf8)',
+                                        border: 'none',
+                                        color: 'white',
+                                        padding: '12px',
+                                        borderRadius: '12px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 12px rgba(99,102,241,0.25)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '6px'
+                                    }}
+                                >
+                                    {bookingSubmitting ? 'Booking...' : 'Confirm Booking'}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
