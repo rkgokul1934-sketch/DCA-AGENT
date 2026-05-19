@@ -147,7 +147,7 @@ export default function Booking({ onNavigate, urlParams }) {
                             filtered = [];
                         } else {
                             filtered = data.filter(slot => {
-                                const [h, m] = slot.start_time.split(':').map(Number);
+                                const [h, m] = slot.time.split(':').map(Number);
                                 const slotMinutes = h * 60 + m;
                                 const [sh, sm] = matchedOverride.start.split(':').map(Number);
                                 const [eh, em] = matchedOverride.end.split(':').map(Number);
@@ -160,7 +160,7 @@ export default function Booking({ onNavigate, urlParams }) {
                             filtered = [];
                         } else if (scheduleRule) {
                             filtered = data.filter(slot => {
-                                const [h, m] = slot.start_time.split(':').map(Number);
+                                const [h, m] = slot.time.split(':').map(Number);
                                 const slotMinutes = h * 60 + m;
                                 return scheduleRule.intervals.some(interval => {
                                     const [sh, sm] = interval.start.split(':').map(Number);
