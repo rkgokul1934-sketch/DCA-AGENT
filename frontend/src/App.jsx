@@ -149,7 +149,7 @@ export default function App() {
     };
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#ffffff', fontFamily: 'Inter, sans-serif', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', height: '100vh', background: '#ffffff', fontFamily: 'Inter, sans-serif', overflow: 'hidden' }}>
 
             {/* Left Pristine White Sidebar */}
             <aside style={{
