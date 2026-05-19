@@ -48,11 +48,18 @@ export default function Availability() {
 
     // Ad-hoc booking states
     const [bookingSlot, setBookingSlot] = useState(null);
+    const [meetingTypes, setMeetingTypes] = useState([
+        { id: 1, name: 'Product Demo', duration: '30 Min', slug: 'demo', desc: 'Deep dive overview of RevOps orchestration, live pipelines, and database automations.' },
+        { id: 2, name: 'Executive Strategy', duration: '45 Min', slug: 'strategy', desc: 'Bespoke alignment session covering BANT qualification parameters and custom sales integration.' },
+        { id: 3, name: 'Technical Setup', duration: '60 Min', slug: 'deepdive', desc: 'Advanced session regarding CRM OAuth handshakes, custom triggers, and system audit trails.' }
+    ]);
     const [bookingForm, setBookingForm] = useState({
         name: '',
         email: '',
         company_name: '',
-        meeting_title: ''
+        meeting_title: '',
+        meeting_type_slug: 'demo',
+        meeting_type_id: 1
     });
     const [bookingSubmitting, setBookingSubmitting] = useState(false);
 
@@ -123,6 +130,37 @@ export default function Availability() {
                 } else {
                     const savedCals = localStorage.getItem('dca_connected_calendars');
                     if (savedCals) setCalendars(JSON.parse(savedCals));
+                }
+
+                // Fetch event templates / meeting types
+                try {
+                    const resTemplates = await fetch('/api/v1/event-templates/');
+                    if (resTemplates.ok) {
+                        const data = await resTemplates.json();
+                        if (data && data.length > 0) {
+                            const mapped = data.map(t => ({
+                                id: t.id,
+                                name: t.title,
+                                duration: `${t.duration} Min`,
+                                slug: t.slug,
+                                desc: t.description || 'No description provided.'
+                            }));
+                            setMeetingTypes(prev => {
+                                const combined = [...prev];
+                                mapped.forEach(m => {
+                                    const idx = combined.findIndex(item => item.slug === m.slug);
+                                    if (idx > -1) {
+                                        combined[idx] = m;
+                                    } else {
+                                        combined.push(m);
+                                    }
+                                });
+                                return combined;
+                            });
+                        }
+                    }
+                } catch (tempErr) {
+                    console.error("Error fetching templates in Availability settings:", tempErr);
                 }
 
             } catch (err) {
@@ -332,11 +370,37 @@ export default function Availability() {
 
     const handleSlotClick = (slot) => {
         setBookingSlot(slot);
+        const defaultType = meetingTypes[0] || { id: 1, name: 'Product Demo', slug: 'demo' };
         setBookingForm({
             name: '',
             email: '',
             company_name: '',
-            meeting_title: `Meeting with Agent (${selectedDate} at ${slot.time ? slot.time.substring(0, 5) : ''})`
+            meeting_title: `${defaultType.name}: Client`,
+            meeting_type_slug: defaultType.slug,
+            meeting_type_id: defaultType.id
+        });
+    };
+
+    const handleMeetingTypeChangeInForm = (slug) => {
+        const selected = meetingTypes.find(m => m.slug === slug);
+        if (selected) {
+            setBookingForm(prev => ({
+                ...prev,
+                meeting_type_slug: selected.slug,
+                meeting_type_id: selected.id,
+                meeting_title: `${selected.name}: ${prev.name || 'Client'}`
+            }));
+        }
+    };
+
+    const handleNameChangeInForm = (val) => {
+        setBookingForm(prev => {
+            const selected = meetingTypes.find(m => m.slug === prev.meeting_type_slug) || { name: 'Product Demo' };
+            return {
+                ...prev,
+                name: val,
+                meeting_title: `${selected.name}: ${val || 'Client'}`
+            };
         });
     };
 
@@ -358,7 +422,8 @@ export default function Availability() {
                     meeting_title: bookingForm.meeting_title,
                     booking_date: selectedDate,
                     booking_time: bookingSlot.time,
-                    timezone: 'Asia/Kolkata'
+                    timezone: 'Asia/Kolkata',
+                    meeting_type_id: bookingForm.meeting_type_id
                 })
             });
 
@@ -1088,13 +1153,37 @@ export default function Availability() {
 
                         <form onSubmit={handleAdhocBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <label style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Demo / Meeting Type</label>
+                                <select 
+                                    value={bookingForm.meeting_type_slug}
+                                    onChange={(e) => handleMeetingTypeChangeInForm(e.target.value)}
+                                    style={{ 
+                                        background: '#f8fafc', 
+                                        border: '1px solid var(--glass-border)', 
+                                        padding: '10px 14px', 
+                                        borderRadius: '12px', 
+                                        fontSize: '0.8rem', 
+                                        outline: 'none', 
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    {meetingTypes.map(type => (
+                                        <option key={type.id || type.slug} value={type.slug}>
+                                            {type.name} ({type.duration})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                 <label style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Invitee Name</label>
                                 <input 
                                     type="text"
                                     required
                                     placeholder="Enter full name"
                                     value={bookingForm.name}
-                                    onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
+                                    onChange={(e) => handleNameChangeInForm(e.target.value)}
                                     style={{ background: '#f8fafc', border: '1px solid var(--glass-border)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', outline: 'none', color: 'var(--text-primary)' }}
                                 />
                             </div>
