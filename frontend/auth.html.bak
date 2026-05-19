@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCA | Secure Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            box-shadow: var(--card-shadow), 0 0 40px rgba(99, 102, 241, 0.1);
+            overflow: hidden;
+            animation: card-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes card-reveal {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-header {
+            text-align: center;
+            padding: 2.5rem 2rem 1.5rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .auth-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1.2rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .auth-tab.active {
+            color: white;
+            background: rgba(99, 102, 241, 0.05);
+            border-bottom: 2px solid var(--accent-blue);
+        }
+
+        .auth-body {
+            padding: 2.5rem 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i,
+        .input-wrapper svg {
+            position: absolute;
+            left: 1.2rem;
+            color: var(--text-secondary);
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+            transition: color 0.3s;
+            z-index: 2;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 0.9rem 1.2rem 0.9rem 2.8rem;
+            border-radius: 14px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-blue);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-control:focus + i,
+        .form-control:focus + svg {
+            color: var(--accent-blue);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-blue), #818cf8);
+            border: none;
+            padding: 1rem;
+            border-radius: 14px;
+            color: white;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 2rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .auth-banner {
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: banner-in 0.3s forwards;
+        }
+
+        @keyframes banner-in {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-banner.success {
+            display: flex;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .auth-banner.error {
+            display: flex;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body class="enterprise-theme">
+    <div id="globe-background">
+        <div class="orbital-ring"></div>
+        <div class="orbital-ring"></div>
+        <div class="orbital-ring"></div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <div class="logo-mark" style="width: 28px; height: 28px; background: var(--accent-blue); border-radius: 8px; box-shadow: 0 0 10px var(--accent-glow);"></div>
+                    <span>DCA <span class="accent-text">PORTAL</span></span>
+                </div>
+                <div class="auth-subtitle">Revenue Intelligence Gateway</div>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">LOGIN</button>
+                <button class="auth-tab" id="tab-register" onclick="switchTab('register')">REGISTER</button>
+            </div>
+
+            <div class="auth-body">
+                <div id="auth-alert" class="auth-banner"></div>
+
+                <form id="auth-form" onsubmit="handleAuth(event)">
+                    <!-- Register Only Field -->
+                    <div class="form-group" id="group-name" style="display: none;">
+                        <label for="reg-name">Full Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="reg-name" class="form-control" placeholder="John Doe">
+                            <i data-lucide="user"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="auth-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="auth-email" class="form-control" required placeholder="name@company.com">
+                            <i data-lucide="mail"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="auth-password">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="auth-password" class="form-control" required placeholder="••••••••">
+                            <i data-lucide="lock"></i>
+                        </div>
+                    </div>
+
+                    <!-- Register Only Role Selection -->
+                    <div class="form-group" id="group-role" style="display: none;">
+                        <label for="reg-role">Role</label>
+                        <div class="input-wrapper">
+                            <select id="reg-role" class="form-control" style="appearance: none; padding-right: 2.5rem;">
+                                <option value="user">Standard User</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                            <i data-lucide="shield"></i>
+                            <i data-lucide="chevron-down" style="left: auto; right: 1.2rem;"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="btn-submit-text">
+                        <span>Sign In</span>
+                        <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'login';
+
+        function switchTab(mode) {
+            currentMode = mode;
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+            
+            const groupName = document.getElementById('group-name');
+            const groupRole = document.getElementById('group-role');
+            const submitBtn = document.getElementById('btn-submit-text');
+            const regNameInput = document.getElementById('reg-name');
+
+            if (mode === 'register') {
+                groupName.style.display = 'block';
+                groupRole.style.display = 'block';
+                regNameInput.required = true;
+                submitBtn.innerHTML = `<span>Create Account</span><i data-lucide="user-plus" style="width: 16px; height: 16px;"></i>`;
+            } else {
+                groupName.style.display = 'none';
+                groupRole.style.display = 'none';
+                regNameInput.required = false;
+                submitBtn.innerHTML = `<span>Sign In</span><i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>`;
+            }
+            lucide.createIcons();
+            hideAlert();
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('auth-alert');
+            alert.className = `auth-banner ${type}`;
+            alert.innerHTML = `
+                <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" style="width: 16px; height: 16px;"></i>
+                <span>${message}</span>
+            `;
+            alert.style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function hideAlert() {
+            document.getElementById('auth-alert').style.display = 'none';
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            hideAlert();
+
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            
+            try {
+                if (currentMode === 'login') {
+                    // 1. Call Login endpoint
+                    const response = await fetch('/api/v1/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.detail || 'Authentication failed');
+                    }
+
+                    // Save token
+                    localStorage.setItem('dca_token', data.access_token);
+                    
+                    // Fetch user info using email to save full profile
+                    // (Or since API register saves name, we can store a mock name for demo from email)
+                    const username = email.split('@')[0];
+                    const friendlyName = username.charAt(0).toUpperCase() + username.slice(1);
+                    const userProfile = {
+                        name: friendlyName,
+                        email: email,
+                        role: 'admin'
+                    };
+                    localStorage.setItem('dca_user', JSON.stringify(userProfile));
+
+                    showAlert('Access authorized. Accessing Cockpit...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/booking.html';
+                    }, 1200);
+
+                } else {
+                    // 2. Call Register endpoint
+                    const name = document.getElementById('reg-name').value;
+                    const role = document.getElementById('reg-role').value;
+
+                    const response = await fetch('/api/v1/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, password, role })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.detail || 'Registration failed');
+                    }
+
+                    showAlert('Account created successfully! Signing in...', 'success');
+                    
+                    // Auto-login after registration
+                    setTimeout(async () => {
+                        try {
+                            const loginResponse = await fetch('/api/v1/auth/login', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email, password })
+                            });
+                            const loginData = await loginResponse.json();
+                            if (loginResponse.ok) {
+                                localStorage.setItem('dca_token', loginData.access_token);
+                                localStorage.setItem('dca_user', JSON.stringify({
+                                    id: data.id,
+                                    name: data.name,
+                                    email: data.email,
+                                    role: data.role
+                                }));
+                                window.location.href = '/booking.html';
+                            }
+                        } catch (err) {
+                            switchTab('login');
+                            showAlert('Registration complete. Please sign in.', 'success');
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        // Initialize Lucide Icons
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // Redirect if already authenticated
+            const token = localStorage.getItem('dca_token');
+            if (token) {
+                window.location.href = '/booking.html';
+            }
+        });
+    </script>
+</body>
+</html>

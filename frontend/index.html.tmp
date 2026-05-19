@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCA Enterprise | Revenue Operations Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- System Health Strip -->
+        <div class="health-strip" id="health-strip">
+            <div class="health-item" data-service="crm"><span class="pulse green"></span> CRM SYNC</div>
+            <div class="health-item" data-service="calendar"><span class="pulse green"></span> CALENDAR</div>
+            <div class="health-item" data-service="ai"><span class="pulse green"></span> SCORING ENGINE</div>
+            <div class="health-item" data-service="audit"><span class="pulse green"></span> AUDIT LOGGER</div>
+            <div class="spacer"></div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search leads, reps, or events...">
+            </div>
+        </div>
+
+        <main class="command-center">
+            <!-- Left: Discovery Pod -->
+            <section class="panel discovery-pod">
+                <div class="panel-header">
+                    <span>DISCOVERY POD</span>
+                    <div class="badge live">LIVE AI</div>
+                </div>
+                <div class="step-tracker" id="step-tracker">
+                    <div class="step active">INTRO</div>
+                    <div class="step">QUALIFY</div>
+                    <div class="step">OBJECTION</div>
+                    <div class="step">BOOK</div>
+                </div>
+                <div class="chat-viewport" id="chat-viewport"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Type a message...">
+                </div>
+                <!-- AI Confidence Card -->
+                <div class="intelligence-card" id="intelligence-card">
+                    <div class="card-title">AI CONFIDENCE</div>
+                    <div class="metrics-row">
+                        <div class="metric">
+                            <span class="val" id="score-intent">0%</span>
+                            <span class="lbl">INTENT</span>
+                        </div>
+                        <div class="metric">
+                            <span class="val" id="score-icp">0%</span>
+                            <span class="lbl">ICP MATCH</span>
+                        </div>
+                        <div class="metric">
+                            <span class="val grade">--</span>
+                            <span class="lbl">GRADE</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center: Smart Scheduler -->
+            <section class="panel scheduler-pod">
+                <div class="panel-header">SMART GLOBAL SCHEDULER</div>
+                <div class="calendar-header">
+                    <div class="month">JUNE 2026</div>
+                    <div class="tz-display">LOCAL TIME: <span id="local-tz">--</span></div>
+                </div>
+                <div class="slot-grid" id="slot-grid">
+                    <!-- Slots will be injected here -->
+                </div>
+                <div class="simulation-panel">
+                    <div class="panel-header" style="padding: 0; border: 0; font-size: 0.7rem;">WAR ROOM SIMULATION</div>
+                    <div class="sim-buttons">
+                        <button onclick="runSim('hot-lead')">🔥 HOT LEAD</button>
+                        <button onclick="runSim('api-failure')">⚠️ API FAIL</button>
+                        <button onclick="runSim('no-show')">🚫 NO-SHOW</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: Executive Cockpit -->
+            <section class="panel executive-cockpit">
+                <div class="panel-header">EXECUTIVE COCKPIT</div>
+                <div class="metrics-grid">
+                    <div class="stat-box">
+                        <div class="val" id="stat-leads">0</div>
+                        <div class="lbl">TOTAL LEADS</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="val" id="stat-conv">0%</div>
+                        <div class="lbl">CONVERSION</div>
+                    </div>
+                </div>
+                
+                <div class="sub-panel">
+                    <div class="sub-header">REP OPTIMIZATION</div>
+                    <div class="workload-list" id="workload-list">
+                        <!-- Reps injected here -->
+                    </div>
+                </div>
+
+                <div class="sub-panel">
+                    <div class="sub-header">AI DECISION LOG</div>
+                    <div class="decision-feed" id="decision-feed"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom: Lead Journey -->
+        <footer class="journey-strip">
+            <div class="journey-header">LEAD JOURNEY TIMELINE</div>
+            <div class="timeline-container" id="timeline-container"></div>
+        </footer>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
+
+        <!-- Prospect Drawer -->
+        <div class="drawer-overlay" id="drawer-overlay"></div>
+        <div class="drawer" id="prospect-drawer">
+            <div class="drawer-header">
+                <h3>PROSPECT DOSSIER</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="drawer-body" id="drawer-body"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="main.js"></script>
+</body>
+</html>

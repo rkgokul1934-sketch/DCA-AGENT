@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCA RevOps | Revenue Intelligence Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Add some specific dashboard and utility CSS overrides for React transition */
+        .system-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .main-layout {
+            height: calc(100vh - 60px);
+        }
+        /* Glassmorphic alerts for authentication */
+        .auth-banner {
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: banner-in 0.3s forwards;
+        }
+        @keyframes banner-in {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .auth-banner.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        .auth-banner.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/index-6nW51T3r.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CeVXWbg_.css">
+</head>
+<body class="enterprise-theme">
+    <div id="globe-background">
+        <div class="orbital-ring"></div>
+        <div class="orbital-ring"></div>
+        <div class="orbital-ring"></div>
+    </div>
+    
+    <div id="root"></div>
+    
+</body>
+</html>

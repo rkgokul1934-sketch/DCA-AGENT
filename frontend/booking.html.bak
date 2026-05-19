@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCA RevOps | Strategic Scheduling & AI Agent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-main: #030712;
+            --panel-bg: rgba(17, 24, 39, 0.7);
+            --card-bg: rgba(31, 41, 55, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.35);
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            --font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% -20%, #1e1b4b 0%, transparent 60%),
+                radial-gradient(circle at 10% 80%, #0c0a1f 0%, transparent 40%);
+        }
+
+        /* Top Navigation Header */
+        .top-system-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background: rgba(3, 7, 18, 0.6);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .brand-logo span {
+            color: var(--accent-primary);
+        }
+
+        .developer-portal-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-dev-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-dev-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-dev-btn.active-accent {
+            background: rgba(99, 102, 241, 0.12);
+            color: #818cf8;
+            border-color: rgba(99, 102, 241, 0.25);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-dev-btn.active-accent:hover {
+            background: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Split-Column Main Container */
+        .portal-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1450px;
+            margin: 95px auto 2rem;
+            padding: 0 1.5rem;
+            gap: 2rem;
+            align-items: stretch;
+            justify-content: center;
+            flex: 1;
+        }
+
+        /* Left Booking Desk */
+        .booking-desk-column {
+            flex: 1.3;
+            min-width: 0;
+        }
+
+        .booking-shell {
+            width: 100%;
+            background: var(--panel-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: float-in 0.8s ease-out;
+        }
+
+        /* Screen 1: Event Selection */
+        .selection-screen {
+            padding: 3rem 2.5rem;
+            text-align: center;
+        }
+
+        .header-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .selection-screen h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #9ca3af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.8rem;
+        }
+
+        .selection-screen p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        .meeting-types-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .meeting-types-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .meeting-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meeting-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .meeting-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.15);
+        }
+
+        .meeting-card:hover::before {
+            opacity: 1;
+        }
+
+        .meeting-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .meeting-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .meeting-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .meeting-details-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1rem;
+            margin-top: auto;
+        }
+
+        .meeting-details-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .meeting-details-meta i {
+            color: var(--accent-primary);
+        }
+
+        /* Screen 2: Split Flow (Left Panel, Calendar, Time Slots) */
+        .booking-flow-screen {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: 560px;
+        }
+
+        @media (max-width: 850px) {
+            .booking-flow-screen {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Side Info Panel */
+        .flow-left-panel {
+            background: rgba(0, 0, 0, 0.15);
+            border-right: 1px solid var(--glass-border);
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 850px) {
+            .flow-left-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                padding: 2rem;
+            }
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 2rem;
+            transition: color 0.3s;
+            width: fit-content;
+        }
+
+        .back-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .host-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .host-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), #a855f7);
+            color: white;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid rgba(255,255,255,0.15);
+        }
+
+        .host-meta h5 {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .host-meta h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .selected-meeting-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+        }
+
+        .selected-meeting-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .selected-meeting-meta span {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .selected-meeting-meta i {
+            color: var(--accent-primary);
+        }
+
+        .selected-meeting-desc {
+            font-size: 0.8rem;
+            line-height: 1.6;
+            margin-top: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Flow Right Content (Calendar + Time split) */
+        .flow-right-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            transition: all 0.4s ease;
+        }
+
+        .flow-right-container.with-slots {
+            grid-template-columns: 1fr 260px;
+        }
+
+        @media (max-width: 650px) {
+            .flow-right-container.with-slots {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Calendar Picker */
+        .calendar-section {
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .month-nav-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .month-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-primary);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+        }
+
+        .weekday-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            text-transform: uppercase;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+            position: relative;
+        }
+
+        .calendar-day.empty {
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .calendar-day.past {
+            opacity: 0.2;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .calendar-day.available {
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        .calendar-day.available:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: white;
+        }
+
+        .calendar-day.selected {
+            background: var(--accent-primary) !important;
+            color: white !important;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .calendar-day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Timezone Dropdown */
+        .timezone-footer {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timezone-footer select {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-family: var(--font-family);
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Slots Panel */
+        .slots-section {
+            background: rgba(0, 0, 0, 0.1);
+            border-left: 1px solid var(--glass-border);
+            padding: 2.5rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            max-height: 560px;
+            overflow-y: auto;
+            animation: slide-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slide-left {
+            from { opacity: 0; transform: translateX(15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 650px) {
+            .slots-section {
+                border-left: none;
+                border-top: 1px solid var(--glass-border);
+                max-height: 350px;
+            }
+        }
+
+        .slots-header {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 1.2rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .slots-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slot-time-btn-wrapper {
+            display: flex;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .slot-time-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slot-time-btn:hover {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .slot-time-btn.active {
+            width: 48%;
+            flex: none;
+            background: var(--card-bg);
+            border-color: var(--accent-primary);
+        }
+
+        .slot-recommendation-tag {
+            font-size: 0.5rem;
+            font-weight: 800;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            padding: 1px 4px;
+            border-radius: 4px;
+            margin-top: 3px;
+            border: 0.5px solid var(--success);
+        }
+
+        .slot-confirm-btn {
+            flex: 1;
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: pop-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 10px var(--accent-glow);
+        }
+
+        .slot-confirm-btn:hover {
+            background: #5053e6;
+        }
+
+        @keyframes pop-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .slot-time-btn-wrapper.expanded .slot-confirm-btn {
+            display: flex;
+        }
+
+        /* Screen 3: Details Form */
+        .form-section {
+            padding: 3rem 2.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: float-in 0.5s ease-out;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-header p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 600px) {
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 12px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.9rem 0.9rem 0.9rem 2.6rem;
+            color: white;
+            font-family: var(--font-family);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group textarea {
+            padding-left: 0.9rem;
+            min-height: 90px;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-group input:focus + i {
+            color: var(--accent-primary);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--accent-primary), #a855f7);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 1.1rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.35);
+        }
+
+        /* Screen 4: Success Details */
+        .success-screen {
+            padding: 3rem 2rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: float-in 0.6s ease-out;
+        }
+
+        .success-icon-wrapper {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border: 1.5px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 25px var(--success-glow);
+        }
+
+        .success-screen h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+        }
+
+        .success-screen p.success-intro {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .confirmed-details-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 1.5rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .confirmed-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 1.2rem;
+        }
+
+        .confirmed-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .confirmed-row i {
+            color: var(--accent-primary);
+            margin-top: 1px;
+        }
+
+        .confirmed-row h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .confirmed-row p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .success-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        @media (max-width: 500px) {
+            .success-actions {
+                flex-direction: column;
+            }
+        }
+
+        .success-btn {
+            padding: 0.9rem 1.8rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .success-btn.primary {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 16px var(--accent-glow);
+        }
+
+        .success-btn.primary:hover {
+            background: #5053e6;
+        }
+
+        .success-btn.secondary {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+        }
+
+        .success-btn.secondary:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Email preview styling */
+        .email-preview-card {
+            background: #0b0f19;
+            border: 1px dashed rgba(99, 102, 241, 0.35);
+            border-radius: 14px;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            text-align: left;
+            position: relative;
+        }
+
+        .email-preview-card::before {
+            content: 'SIMULATED EMAIL SENT INSTANTLY';
+            position: absolute;
+            top: -9px;
+            left: 15px;
+            background: #0f0d26;
+            color: #818cf8;
+            font-size: 0.55rem;
+            font-weight: 800;
+            padding: 1px 6px;
+            border-radius: 4px;
+            border: 0.5px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .email-field {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .email-field span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .email-body {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 10px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        /* RIGHT COLUMN: AI DISCOVERY AGENT */
+        .agent-chat-column {
+            flex: 0.8;
+            background: var(--panel-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            height: 680px; /* Matching booking column height bounds */
+            overflow: hidden;
+            animation: float-in 0.9s ease-out;
+        }
+
+        .agent-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .agent-status-indicator {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .agent-status-indicator::after {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; width: 14px; height: 14px;
+            border: 1px solid var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 1; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        .agent-header-title h3 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .agent-header-title p {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Mini lead intelligence widget */
+        .agent-lead-intel {
+            padding: 0.8rem 1.2rem;
+            background: rgba(99, 102, 241, 0.04);
+            border-bottom: 1px solid var(--glass-border);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .intel-metric-box {
+            padding: 4px;
+        }
+
+        .intel-metric-value {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+        }
+
+        .intel-metric-label {
+            font-size: 0.55rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Chat Window Viewport */
+        .agent-chat-viewport {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 0.9rem 1rem;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            animation: slide-up-bubble 0.3s ease-out;
+        }
+
+        @keyframes slide-up-bubble {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-bubble.user {
+            background: var(--accent-primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .chat-bubble.ai {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-bubble.thinking {
+            color: var(--text-secondary);
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.01);
+            align-self: flex-start;
+            border: 1px dashed var(--glass-border);
+        }
+
+        /* Chat Input Area */
+        .agent-chat-input-bar {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .agent-chat-input-bar input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: white;
+            outline: none;
+            font-family: var(--font-family);
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .agent-chat-input-bar input:focus {
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .agent-chat-send-btn {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px var(--accent-glow);
+        }
+
+        .agent-chat-send-btn:hover {
+            transform: scale(1.05);
+            background: #5053e6;
+        }
+
+        /* Mobile FAB and Drawer styles */
+        .chat-fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            border: none;
+            color: white;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .chat-fab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.55);
+        }
+
+        .fab-pulse {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--bg-main);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        @media (max-width: 1150px) {
+            .portal-wrapper {
+                flex-direction: column;
+                align-items: center;
+                margin-top: 85px;
+            }
+
+            .booking-desk-column {
+                width: 100%;
+            }
+
+            .agent-chat-column {
+                display: none;
+            }
+
+            .chat-fab {
+                display: flex;
+            }
+
+            /* Responsive Mobile Drawer State */
+            .agent-chat-column.mobile-open {
+                display: flex !important;
+                position: fixed;
+                bottom: 95px;
+                right: 25px;
+                width: calc(100% - 50px);
+                max-width: 380px;
+                height: 520px;
+                z-index: 999;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+                animation: slide-up-chat 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+        }
+
+        @keyframes slide-up-chat {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .thinking span {
+            animation: blink 1.4s infinite both;
+        }
+        .thinking span:nth-child(2) { animation-delay: .2s; }
+        .thinking span:nth-child(3) { animation-delay: .4s; }
+
+        @keyframes blink {
+            0% { opacity: .2; }
+            20% { opacity: 1; }
+            100% { opacity: .2; }
+        }
+
+        @keyframes float-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .glow-text {
+            animation: text-glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes text-glow {
+            from { text-shadow: 0 0 5px var(--accent-primary); }
+            to { text-shadow: 0 0 20px var(--accent-primary), 0 0 30px #a855f7; color: white; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP SYSTEM DEV NAV BAR -->
+    <nav class="top-system-nav">
+        <a href="/index.html" class="brand-logo">
+            <i data-lucide="zap" style="color: var(--accent-primary);"></i>
+            <span>DCA <span class="accent-text">REVOPS</span></span>
+        </a>
+        <div class="developer-portal-links">
+            <a href="/index.html" class="nav-dev-btn"><i data-lucide="layout-dashboard" size="14"></i> Admin Console</a>
+            <a href="/docs" class="nav-dev-btn active-accent" target="_blank"><i data-lucide="file-code2" size="14"></i> Swagger API</a>
+            <a href="/redoc" class="nav-dev-btn active-accent" target="_blank"><i data-lucide="book-open" size="14"></i> ReDoc Docs</a>
+            <a href="/meeting.html?title=Strategic%20Discovery" class="nav-dev-btn"><i data-lucide="video" size="14"></i> Boardroom</a>
+        </div>
+    </nav>
+
+    <!-- PORTAL GRID CONTAINER -->
+    <div class="portal-wrapper">
+        
+        <!-- LEFT PANEL: CUSTOM CALENDLY SCHEDULER -->
+        <main class="booking-desk-column">
+            <div class="booking-shell" id="booking-shell">
+                
+                <!-- SCREEN 1: EVENT SELECTION -->
+                <div class="selection-screen" id="screen-selection">
+                    <div class="header-section">
+                        <h1>Select Meeting Experience</h1>
+                        <p>Welcome! Choose one of our optimized meeting types to connect with our GTM strategy desk immediately.</p>
+                    </div>
+
+                    <div class="meeting-types-grid">
+                        <!-- Card 1: Product Demo -->
+                        <div class="meeting-card" onclick="selectMeetingType('demo', 'Product Demo', 'A standard walkthrough of the DCA platform.', 30)">
+                            <div>
+                                <div class="meeting-card-icon">
+                                    <i data-lucide="monitor"></i>
+                                </div>
+                                <h3>Product Demo</h3>
+                                <p>Get a complete high-fidelity walkthrough of the Revenue Intelligence Command Center and our autonomous agents.</p>
+                            </div>
+                            <div class="meeting-details-meta">
+                                <span><i data-lucide="clock"></i> 30 Min</span>
+                                <span><i data-lucide="video"></i> Video Meeting</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Executive Strategy -->
+                        <div class="meeting-card" onclick="selectMeetingType('exec-strategy', 'Executive Strategy', 'High-level ROI and strategic alignment session.', 45)">
+                            <div>
+                                <div class="meeting-card-icon">
+                                    <i data-lucide="award"></i>
+                                </div>
+                                <h3>Executive Strategy</h3>
+                                <p>Discuss RevOps scaling bottlenecks, executive compliance checks, and target alignment with our principal strategists.</p>
+                            </div>
+                            <div class="meeting-details-meta">
+                                <span><i data-lucide="clock"></i> 45 Min</span>
+                                <span><i data-lucide="video"></i> Video Meeting</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Technical Deep Dive -->
+                        <div class="meeting-card" onclick="selectMeetingType('tech-dive', 'Technical Deep Dive', 'Architecture, security, and integration review.', 60)">
+                            <div>
+                                <div class="meeting-card-icon">
+                                    <i data-lucide="cpu"></i>
+                                </div>
+                                <h3>Technical Deep Dive</h3>
+                                <p>Architectural overview, API endpoints validation, database structures integration, and data encryption compliance.</p>
+                            </div>
+                            <div class="meeting-details-meta">
+                                <span><i data-lucide="clock"></i> 60 Min</span>
+                                <span><i data-lucide="video"></i> Video Meeting</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 2: CALENDAR & SLOTS Split Flow -->
+                <div class="booking-flow-screen hidden" id="screen-scheduling">
+                    <!-- Left Info Panel -->
+                    <div class="flow-left-panel">
+                        <div>
+                            <button class="back-btn" onclick="goToScreen('selection')">
+                                <i data-lucide="arrow-left" size="16"></i> Back
+                            </button>
+                            <div class="host-info">
+                                <div class="host-avatar">ED</div>
+                                <div class="host-meta">
+                                    <h5>Your Host</h5>
+                                    <h4>Enterprise Demo Rep</h4>
+                                </div>
+                            </div>
+                            <h2 class="selected-meeting-title" id="display-meeting-title">Product Demo</h2>
+                            <p class="selected-meeting-desc" id="display-meeting-desc">A standard walkthrough of the DCA platform.</p>
+                        </div>
+
+                        <div class="selected-meeting-meta">
+                            <span><i data-lucide="clock" size="18"></i> <span id="display-meeting-duration">30 Min</span></span>
+                            <span><i data-lucide="video" size="18"></i> Google Meet Video Session</span>
+                            <span><i data-lucide="globe" size="18"></i> Instant Email Confirmation</span>
+                        </div>
+                    </div>
+
+                    <!-- Right interactive calendar panel -->
+                    <div class="flow-right-container" id="flow-right-container">
+                        <!-- Calendar picker -->
+                        <div class="calendar-section">
+                            <div class="calendar-header">
+                                <h3 id="calendar-month-year">June 2026</h3>
+                                <div class="calendar-nav">
+                                    <button class="month-nav-btn" onclick="changeMonth(-1)"><i data-lucide="chevron-left" size="18"></i></button>
+                                    <button class="month-nav-btn" onclick="changeMonth(1)"><i data-lucide="chevron-right" size="18"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="calendar-grid" id="calendar-grid">
+                                <!-- Filled dynamically by JavaScript -->
+                            </div>
+
+                            <!-- Timezone dropdown footer -->
+                            <div class="timezone-footer">
+                                <i data-lucide="globe" size="16" style="color: var(--accent-primary);"></i>
+                                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">TIMEZONE:</label>
+                                <select id="timezone-select" onchange="onTimezoneChange()">
+                                    <option value="Asia/Kolkata">India (IST) - GMT+5:30</option>
+                                    <option value="UTC" selected>Universal Time (UTC)</option>
+                                    <option value="US/Eastern">US Eastern (EST) - GMT-5</option>
+                                    <option value="US/Pacific">US Pacific (PST) - GMT-8</option>
+                                    <option value="Europe/London">London (GMT) - GMT+0</option>
+                                    <option value="Europe/Paris">Paris (CET) - GMT+1</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Vertical Slots Selector -->
+                        <div class="slots-section hidden" id="slots-panel">
+                            <div class="slots-header" id="slots-panel-header">Select Time</div>
+                            <div class="slots-container" id="slots-container">
+                                <!-- Filled dynamically by API checkSlots -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 3: LEAD DETAILS FORM -->
+                <div class="form-section hidden" id="screen-form">
+                    <button class="back-btn" onclick="goToScreen('scheduling')" style="margin-bottom: 1.5rem;">
+                        <i data-lucide="arrow-left" size="16"></i> Back
+                    </button>
+                    <div class="form-header">
+                        <h2>Complete Registration</h2>
+                        <p>Please enter your contact credentials to verify identity scoring and lock your slot.</p>
+                    </div>
+
+                    <form id="booking-form" onsubmit="submitBooking(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="lead-name">Your Full Name *</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="lead-name" placeholder="John Doe" required>
+                                    <i data-lucide="user" size="18"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lead-email">Your Work Email *</label>
+                                <div class="input-wrapper">
+                                    <input type="email" id="lead-email" placeholder="john@company.com" required>
+                                    <i data-lucide="mail" size="18"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="lead-company">Company Name *</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="lead-company" placeholder="Enterprise Labs Inc." required>
+                                    <i data-lucide="building" size="18"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="lead-notes">Additional Context / Strategy Focus</label>
+                                <textarea id="lead-notes" placeholder="Tell us about your team size, RevOps pipeline structure, or what you want to achieve..."></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="submit-btn">
+                            <span>SCHEDULE STRATEGIC MEETING</span>
+                            <i data-lucide="arrow-right" size="18"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- SCREEN 4: SUCCESS VIEW -->
+                <div class="success-screen hidden" id="screen-success">
+                    <div class="success-icon-wrapper">
+                        <i data-lucide="check" size="42"></i>
+                    </div>
+                    <h1 class="glow-text">Strategic Session Confirmed!</h1>
+                    <p class="success-intro">Your secure reservation has been logged into the GTM Engine. An instant calendar invitation has been delivered to your mailbox.</p>
+
+                    <div class="confirmed-details-card">
+                        <div class="confirmed-row">
+                            <i data-lucide="calendar" size="20"></i>
+                            <div>
+                                <h4>Date & Time</h4>
+                                <p id="success-display-datetime">Monday, June 1, 2026 at 2:30 PM (Asia/Kolkata)</p>
+                            </div>
+                        </div>
+
+                        <div class="confirmed-row">
+                            <i data-lucide="award" size="20"></i>
+                            <div>
+                                <h4>Meeting Experience</h4>
+                                <p id="success-display-meeting-name">Product Demo (30 Min)</p>
+                            </div>
+                        </div>
+
+                        <div class="confirmed-row">
+                            <i data-lucide="users" size="20"></i>
+                            <div>
+                                <h4>Host Desk</h4>
+                                <p>Enterprise Demo Rep (demo-rep@dca.ai)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="success-actions">
+                        <a href="#" class="success-btn primary" id="success-meeting-link">
+                            <i data-lucide="video" size="18"></i>
+                            <span>JOIN DIGITAL BOARDROOM</span>
+                        </a>
+                        <button class="success-btn secondary" onclick="window.location.reload()">
+                            <i data-lucide="calendar-plus" size="18"></i>
+                            <span>Book Another Event</span>
+                        </button>
+                    </div>
+
+                    <!-- Real-time Email Delivery Preview -->
+                    <div class="email-preview-card" id="email-preview">
+                        <div class="email-field">To: <span id="email-preview-to">prospect@demo.com</span></div>
+                        <div class="email-field">Subject: <span id="email-preview-subject">✅ Confirmed: Product Demo</span></div>
+                        <div class="email-body" id="email-preview-body">
+                            Hi John, your demo is confirmed! A calendar event is created.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL: DOCKED AI DISCOVERY AGENT -->
+        <aside class="agent-chat-column" id="agent-chat-panel">
+            <div class="agent-header">
+                <div class="agent-status-indicator"></div>
+                <div class="agent-header-title">
+                    <h3>DCA REVOPS AI AGENT</h3>
+                    <p>Live Prospect Assistance Desk</p>
+                </div>
+            </div>
+
+            <!-- Mini Live Lead Intel Scorecard -->
+            <div class="agent-lead-intel">
+                <div class="intel-metric-box">
+                    <div class="intel-metric-value" id="ai-intent-val">0%</div>
+                    <div class="intel-metric-label">INTENT</div>
+                </div>
+                <div class="intel-metric-box">
+                    <div class="intel-metric-value" id="ai-icp-val">0%</div>
+                    <div class="intel-metric-label">ICP MATCH</div>
+                </div>
+                <div class="intel-metric-box">
+                    <div class="intel-metric-value" id="ai-grade-val">--</div>
+                    <div class="intel-metric-label">ICP GRADE</div>
+                </div>
+            </div>
+
+            <!-- Chat Viewport -->
+            <div class="agent-chat-viewport" id="ai-chat-viewport">
+                <div class="chat-bubble ai">
+                    <p>Hi there! 👋 I am the DCA RevOps Assistant. Chat with me to learn about our capabilities, qualify your company for direct strategic routing, or obtain optimal meeting slot recommendations!</p>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="agent-chat-input-bar">
+                <input type="text" id="ai-chat-input" placeholder="Ask anything or simulate a lead context..." onkeypress="handleChatEnter(event)">
+                <button class="agent-chat-send-btn" onclick="submitChatMessage()">
+                    <i data-lucide="send" size="16"></i>
+                </button>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- MOBILE FLOATING ACTION TRIGGER -->
+    <button class="chat-fab" id="chat-fab" onclick="toggleMobileChat()">
+        <i data-lucide="message-square" id="fab-icon"></i>
+        <span class="fab-pulse"></span>
+    </button>
+
+    <script>
+        // Global variables for booking flow
+        let selectedMeeting = {
+            slug: 'demo',
+            title: 'Product Demo',
+            description: 'A standard walkthrough of the DCA platform.',
+            duration: 30
+        };
+
+        let selectedDate = null;
+        let selectedTime = null;
+        let currentDateContext = new Date(2026, 5, 1); // June 2026 (matching system timeline)
+        
+        // Chat states
+        let chatSessionId = 'lead-' + Math.random().toString(36).substring(2, 9);
+        let leadIntelState = {
+            intent: 0,
+            icp: 0,
+            grade: '--'
+        };
+
+        // Initialize page
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            renderCalendar();
+            
+            // Auto-fill form details if user session exists (Maps their identity!)
+            try {
+                const userStr = localStorage.getItem('dca_user');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    if (user.name) document.getElementById('lead-name').value = user.name;
+                    if (user.email) document.getElementById('lead-email').value = user.email;
+                }
+            } catch (e) {
+                console.error("Error pre-filling booking form with user identity:", e);
+            }
+        });
+
+        // Toggle mobile AI agent chat overlay drawer
+        function toggleMobileChat() {
+            const chatPanel = document.getElementById('agent-chat-panel');
+            const icon = document.getElementById('fab-icon');
+            chatPanel.classList.toggle('mobile-open');
+            
+            if (chatPanel.classList.contains('mobile-open')) {
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                icon.setAttribute('data-lucide', 'message-square');
+            }
+            lucide.createIcons();
+        }
+
+        // Navigation flow helper
+        function goToScreen(screenName) {
+            const screens = ['selection', 'scheduling', 'form', 'success'];
+            screens.forEach(s => {
+                document.getElementById(`screen-${s}`).classList.add('hidden');
+            });
+            document.getElementById(`screen-${screenName}`).classList.remove('hidden');
+        }
+
+        // Action when selecting a meeting card
+        function selectMeetingType(slug, title, desc, duration) {
+            selectedMeeting = { slug, title, description: desc, duration };
+            
+            // Set dynamic details in sidebar
+            document.getElementById('display-meeting-title').textContent = title;
+            document.getElementById('display-meeting-desc').textContent = desc;
+            document.getElementById('display-meeting-duration').textContent = `${duration} Min`;
+            
+            // Re-render calendar & slots clean state
+            selectedDate = null;
+            selectedTime = null;
+            document.getElementById('flow-right-container').classList.remove('with-slots');
+            document.getElementById('slots-panel').classList.add('hidden');
+            
+            // Go to calendar screen
+            goToScreen('scheduling');
+            renderCalendar();
+        }
+
+        // Change calendar month nav
+        function changeMonth(delta) {
+            currentDateContext.setMonth(currentDateContext.getMonth() + delta);
+            renderCalendar();
+            
+            // Hide times panel when switching months
+            document.getElementById('flow-right-container').classList.remove('with-slots');
+            document.getElementById('slots-panel').classList.add('hidden');
+        }
+
+        // Render visual calendar days
+        function renderCalendar() {
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendar-month-year').textContent = `${monthNames[currentDateContext.getMonth()]} ${currentDateContext.getFullYear()}`;
+            
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            // Add week label titles
+            const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            weekdays.forEach(day => {
+                const label = document.createElement('div');
+                label.className = 'weekday-label';
+                label.textContent = day;
+                grid.appendChild(label);
+            });
+
+            // Get month parameters
+            const firstDayIndex = new Date(currentDateContext.getFullYear(), currentDateContext.getMonth(), 1).getDay();
+            const lastDate = new Date(currentDateContext.getFullYear(), currentDateContext.getMonth() + 1, 0).getDate();
+            
+            // Append empty grid cells for offsets
+            for (let i = 0; i < firstDayIndex; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day empty';
+                grid.appendChild(empty);
+            }
+
+            // Create day cells
+            const today = new Date(2026, 4, 18); // Simulation current time May 18, 2026
+            
+            for (let day = 1; day <= lastDate; day++) {
+                const btn = document.createElement('button');
+                btn.className = 'calendar-day';
+                btn.textContent = day;
+                
+                const cellDate = new Date(currentDateContext.getFullYear(), currentDateContext.getMonth(), day);
+                
+                // Block weekend scheduling for corporate reps
+                const isWeekend = cellDate.getDay() === 0 || cellDate.getDay() === 6;
+                
+                // Block past dates (before May 18, 2026)
+                const isPast = cellDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+                if (isPast || isWeekend) {
+                    btn.classList.add('past');
+                } else {
+                    btn.classList.add('available');
+                    
+                    // Formatting YYYY-MM-DD
+                    const dateStr = formatDateISO(cellDate);
+                    
+                    // Keep selected date highlighted
+                    if (selectedDate === dateStr) {
+                        btn.classList.add('selected');
+                    }
+                    
+                    btn.onclick = () => selectDateHandler(dateStr, btn);
+                }
+
+                // Mark current simulation today's date
+                if (cellDate.getFullYear() === today.getFullYear() && 
+                    cellDate.getMonth() === today.getMonth() && 
+                    cellDate.getDate() === today.getDate()) {
+                    btn.classList.add('today');
+                }
+
+                grid.appendChild(btn);
+            }
+        }
+
+        // Date select event handler
+        async function selectDateHandler(dateStr, element) {
+            // Highlight active calendar date button
+            document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            selectedDate = dateStr;
+            selectedTime = null;
+            
+            // Format nice human-readable day header
+            const dateObj = new Date(dateStr);
+            const options = { weekday: 'long', month: 'short', day: 'numeric' };
+            const humanDate = dateObj.toLocaleDateString('en-US', options);
+            document.getElementById('slots-panel-header').textContent = humanDate;
+
+            // Shift calendar view left, reveal slots section
+            document.getElementById('flow-right-container').classList.add('with-slots');
+            document.getElementById('slots-panel').classList.remove('hidden');
+            
+            // Load available hours via check-slots API
+            await loadSlots(dateStr);
+        }
+
+        // API Integration: Load slots from check-slots
+        async function loadSlots(dateStr) {
+            const container = document.getElementById('slots-container');
+            container.innerHTML = '<div style="color: var(--accent-primary); font-size: 0.85rem; padding: 20px 0; text-align: center;">Fetching global schedule...</div>';
+            
+            const timezone = document.getElementById('timezone-select').value;
+            
+            try {
+                const response = await fetch('/api/v1/bookings/check-slots', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: dateStr,
+                        meeting_type_slug: selectedMeeting.slug,
+                        timezone: timezone
+                    })
+                });
+
+                if (!response.ok) throw new Error("Failed to load slots");
+                const slots = await response.json();
+                
+                if (!slots || slots.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem; padding: 20px 0; text-align: center;">No slots open. Try a weekday.</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                
+                // De-duplicate time strings because we query multiple active sales reps
+                const uniqueSlots = [];
+                const seenTimes = new Set();
+                
+                slots.forEach(slot => {
+                    const baseTime = slot.start_time.substring(0, 5); // "HH:MM"
+                    if (!seenTimes.has(baseTime)) {
+                        seenTimes.add(baseTime);
+                        uniqueSlots.push(slot);
+                    }
+                });
+
+                // Display up to 10 sorted unique slots
+                uniqueSlots.slice(0, 10).forEach(slot => {
+                    const baseTimeStr = slot.start_time.substring(0, 5);
+                    const formattedTime = formatTimeTwelveHour(baseTimeStr);
+                    
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'slot-time-btn-wrapper';
+                    
+                    wrapper.innerHTML = `
+                        <button class="slot-time-btn" type="button">
+                            <span>${formattedTime}</span>
+                            ${slot.is_recommended ? `<span class="slot-recommendation-tag">AI Optimal</span>` : ''}
+                        </button>
+                        <button class="slot-confirm-btn" type="button">Confirm</button>
+                    `;
+
+                    const timeBtn = wrapper.querySelector('.slot-time-btn');
+                    const confirmBtn = wrapper.querySelector('.slot-confirm-btn');
+
+                    timeBtn.onclick = () => {
+                        document.querySelectorAll('.slot-time-btn-wrapper').forEach(w => {
+                            w.classList.remove('expanded');
+                            w.querySelector('.slot-time-btn').classList.remove('active');
+                        });
+                        
+                        wrapper.classList.add('expanded');
+                        timeBtn.classList.add('active');
+                        selectedTime = baseTimeStr;
+                    };
+
+                    confirmBtn.onclick = () => {
+                        goToScreen('form');
+                    };
+
+                    container.appendChild(wrapper);
+                });
+                
+            } catch (err) {
+                console.error("Slots load error:", err);
+                container.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem; padding: 20px 0; text-align: center;">Connection failed.</div>';
+            }
+        }
+
+        // Handle Timezone selection shifts
+        function onTimezoneChange() {
+            if (selectedDate) {
+                loadSlots(selectedDate);
+            }
+        }
+
+        // Submitting Booking to FastAPI Backend
+        async function submitBooking(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const submitSpan = submitBtn.querySelector('span');
+            
+            submitSpan.textContent = 'RESERVING SLOT...';
+            submitBtn.style.opacity = '0.7';
+            submitBtn.style.pointerEvents = 'none';
+
+            const name = document.getElementById('lead-name').value;
+            const email = document.getElementById('lead-email').value;
+            const company_name = document.getElementById('lead-company').value;
+            const notes = document.getElementById('lead-notes').value;
+            const timezone = document.getElementById('timezone-select').value;
+
+            const payload = {
+                name: name,
+                email: email,
+                company_name: company_name,
+                meeting_title: `${selectedMeeting.title}: ${company_name}`,
+                booking_date: selectedDate,
+                booking_time: `${selectedTime}:00`,
+                timezone: timezone
+            };
+
+            try {
+                const response = await fetch('/api/v1/legacy-bookings/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Registration rejected by server.");
+                const result = await response.json();
+                
+                // Fill success screen variables
+                const successDate = new Date(selectedDate);
+                const readableDate = successDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+                const formattedTime = formatTimeTwelveHour(selectedTime);
+                
+                document.getElementById('success-display-datetime').textContent = `${readableDate} at ${formattedTime} (${timezone})`;
+                document.getElementById('success-display-meeting-name').textContent = `${selectedMeeting.title} (${selectedMeeting.duration} Min)`;
+                
+                // Injected boardroom video link inside success button
+                const meetingRoomLink = `/meeting.html?id=${result.id}&title=${encodeURIComponent(payload.meeting_title)}`;
+                document.getElementById('success-meeting-link').href = meetingRoomLink;
+
+                // Show instant simulated email confirmation receipt
+                if (result.email_preview) {
+                    document.getElementById('email-preview-to').textContent = result.email_preview.to;
+                    document.getElementById('email-preview-subject').textContent = result.email_preview.subject;
+                    document.getElementById('email-preview-body').textContent = result.email_preview.body;
+                } else {
+                    document.getElementById('email-preview').classList.add('hidden');
+                }
+
+                // Show success screen
+                goToScreen('success');
+                lucide.createIcons();
+
+            } catch (err) {
+                alert(err.message || "Failed to make booking. Please check console errors.");
+            } finally {
+                submitSpan.textContent = 'SCHEDULE STRATEGIC MEETING';
+                submitBtn.style.opacity = '1';
+                submitBtn.style.pointerEvents = 'all';
+            }
+        }
+
+        // Formatting utilities
+        function formatDateISO(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatTimeTwelveHour(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${String(minutes).padStart(2, '0')} ${ampm}`;
+        }
+
+        /* --- AI CHAT LOGIC --- */
+
+        // Handle enter key in chat
+        function handleChatEnter(e) {
+            if (e.key === 'Enter') {
+                submitChatMessage();
+            }
+        }
+
+        // Submit chat to agent
+        async function submitChatMessage() {
+            const input = document.getElementById('ai-chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+            
+            // Add user bubble
+            addChatBubble('user', text);
+            
+            // Show thinking bubble
+            const thinkingId = addThinkingBubble();
+
+            try {
+                const response = await fetch('/api/v1/agent/chat/respond', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: text,
+                        session_id: chatSessionId
+                    })
+                });
+
+                if (!response.ok) throw new Error("Agent connection error");
+                const result = await response.json();
+                
+                // Remove thinking bubble
+                removeThinkingBubble(thinkingId);
+
+                if (result.answer) {
+                    // Add AI bubble
+                    addChatBubble('ai', result.answer.message);
+                    
+                    // Update session ID if changed
+                    if (result.session_id) chatSessionId = result.session_id;
+
+                    // Capture lead scoring metrics
+                    if (result.answer.lead_score) {
+                        const scoreVal = result.answer.lead_score;
+                        document.getElementById('ai-intent-val').textContent = `${scoreVal}%`;
+                        document.getElementById('ai-icp-val').textContent = `${Math.min(100, scoreVal + 10)}%`;
+                        
+                        const gradeBox = document.getElementById('ai-grade-val');
+                        if (scoreVal > 80) {
+                            gradeBox.textContent = 'A+';
+                            gradeBox.style.color = 'var(--success)';
+                        } else {
+                            gradeBox.textContent = 'B';
+                            gradeBox.style.color = '#f59e0b';
+                        }
+                    }
+
+                    // AUTO PRE-FILL FORM DETAILS (Brilliant integration UX!)
+                    if (result.answer.lead_data) {
+                        const lead = result.answer.lead_data;
+                        if (lead.name) document.getElementById('lead-name').value = lead.name;
+                        if (lead.email) document.getElementById('lead-email').value = lead.email;
+                        if (lead.company_name) document.getElementById('lead-company').value = lead.company_name;
+                    }
+
+                    // AUTO NAVIGATE & OPEN CALENDAR SLOTS (Frictionless AI qualification routing!)
+                    if (result.answer.recommendation === 'direct_booking' || result.answer.recommendation === 'direct_booking_vip') {
+                        const targetSlug = result.answer.recommendation === 'direct_booking_vip' ? 'exec-strategy' : 'demo';
+                        
+                        if (targetSlug === 'exec-strategy') {
+                            selectMeetingType('exec-strategy', 'Executive Strategy', 'High-level ROI and strategic alignment session.', 45);
+                        } else {
+                            selectMeetingType('demo', 'Product Demo', 'A standard walkthrough of the DCA platform.', 30);
+                        }
+                        
+                        // Select default available date matching simulation context (June 1, 2026)
+                        const targetDateStr = "2026-06-01";
+                        selectedDate = targetDateStr;
+                        renderCalendar();
+                        
+                        // Human-readable date header update
+                        const dateObj = new Date(targetDateStr);
+                        const humanDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                        document.getElementById('slots-panel-header').textContent = humanDate;
+
+                        // Slide panel to show slots
+                        document.getElementById('flow-right-container').classList.add('with-slots');
+                        document.getElementById('slots-panel').classList.remove('hidden');
+                        
+                        // Load slot buttons via API
+                        loadSlots(targetDateStr);
+                        
+                        // Add context chat bubble so user knows where to click!
+                        setTimeout(() => {
+                            addChatBubble('ai', `✨ I have automatically navigated to our calendar panel on the left and loaded the recommended slots for <strong>June 1, 2026</strong>. Please choose your preferred time there!`);
+                        }, 500);
+                    }
+                }
+
+            } catch (err) {
+                removeThinkingBubble(thinkingId);
+                addChatBubble('ai', "I encountered a minor network error. Make sure your server is online and try again!");
+            }
+        }
+
+        // Add a bubble to viewport
+        function addChatBubble(side, text) {
+            const viewport = document.getElementById('ai-chat-viewport');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${side}`;
+            bubble.innerHTML = `<p>${text}</p>`;
+            viewport.appendChild(bubble);
+            
+            setTimeout(() => {
+                viewport.scrollTo({
+                    top: viewport.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 50);
+        }
+
+        // Add loading thinking bubble
+        function addThinkingBubble() {
+            const viewport = document.getElementById('ai-chat-viewport');
+            const bubble = document.createElement('div');
+            const uniqueId = 'think-' + Date.now();
+            bubble.id = uniqueId;
+            bubble.className = 'chat-bubble ai thinking';
+            bubble.innerHTML = `<p>AI is thinking<span>.</span><span>.</span><span>.</span></p>`;
+            viewport.appendChild(bubble);
+            
+            setTimeout(() => {
+                viewport.scrollTo({
+                    top: viewport.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 50);
+            return uniqueId;
+        }
+
+        // Remove loading thinking bubble
+        function removeThinkingBubble(id) {
+            const bubble = document.getElementById(id);
+            if (bubble) bubble.remove();
+        }
+    </script>
+</body>
+</html>

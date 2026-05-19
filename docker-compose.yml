@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8020:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - mongodb
+
+  worker:
+    build: .
+    command: celery -A app.workers.competition_worker.celery_app worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - mongodb
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-booking_db}
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+
+  chromadb:
+    image: chromadb/chroma
+    ports:
+      - "8021:8000"
